@@ -1,0 +1,76 @@
+en_core_web_sm (SM for short)
+en_core_web_md (MD for short)
+
+the first difference when using SM vs. MD is that spacy prints a warning that the simpler model (SM) has no word vectors loaded and
+so the similarity will be based off of other means which may not give as good similarity results as a more sophisticated model with word vectors.
+
+I added some code in similarity.py to sort the results based on ranking for easier comparison
+
+word similarity SM
+cat cat 1.0
+apple apple 1.0
+monkey monkey 1.0
+banana banana 1.0
+apple monkey 0.7389943599700928
+monkey apple 0.7389943599700928
+cat apple 0.7018378973007202
+apple cat 0.7018378973007202
+cat monkey 0.6455236077308655
+monkey cat 0.6455236077308655
+monkey banana 0.4232020080089569
+banana monkey 0.4232020080089569
+apple banana 0.36197030544281006
+banana apple 0.36197030544281006
+cat banana 0.2214718759059906
+banana cat 0.2214718759059906
+
+
+Word Similarity MD
+cat cat 1.0
+apple apple 1.0
+monkey monkey 1.0
+banana banana 1.0
+apple banana 0.6646699905395508
+banana apple 0.6646699905395508
+cat monkey 0.5929930210113525
+monkey cat 0.5929930210113525
+monkey banana 0.4041501581668854
+banana monkey 0.4041501581668854
+apple monkey 0.2342509925365448
+monkey apple 0.2342509925365448
+cat banana 0.2235882580280304
+banana cat 0.2235882580280304
+cat apple 0.2036806046962738
+apple cat 0.2036806046962738
+
+we see that both SM and MD are commutative similarity (x, y) = similarity (y, x)
+the simple SM model seems to highlight (cat, apple) = 0.702 as a greater similarity than (cat, monkey) = 0.646
+the MD model is able to more naturally rank (cat, apple) = 0.204 as less similar than the natural pairing of the two animals (cat, monkey) = 0.593 
+
+exluding comparisons like (x, x) and duplicates (x, y) and (y, x) MD finds the top three results to be (apple, banana); (cat, monkey) and (monkey banana)
+exluding comparisons like (x, x) and duplicates (x, y) and (y, x) SM finds the top three results to be (apple, monkey); (cat, apple) and (monkey, cat)
+I think most people would conclude MD has done the better job and few would rank (apple, monkey) ahead of (monkey, banana) 
+the similarity rankings that MD has achieved would be in better agreement with those that a human would be likely to make if asked to compare and rank similarity
+
+
+sentence similarity SM
+Why is my cat on the car Hello, there is my car 0.5648939507997681
+Why is my cat on the car I've lost my car in my car 0.548028403302901
+Why is my cat on the car where did my dog go 0.4043351553824302
+Why is my cat on the car I will name my dog Diana 0.3904074310483232
+Why is my cat on the car I'd like my boat back 0.3007499696891998
+
+sentence similarity MD
+
+Why is my cat on the car Hello, there is my car 0.8033180111627156
+Why is my cat on the car I've lost my car in my car 0.6787541571030323
+Why is my cat on the car I will name my dog Diana 0.6491444739190607
+Why is my cat on the car where did my dog go 0.630065230699739
+Why is my cat on the car I'd like my boat back 0.5624940517078084
+
+I think more sentences would be needed to really see the usefulness of MD
+overall, MD is able to determine a higher confidence in similarity comparison of all the sentences. Perhaps because they do all share themes several have either animal or vehicle 
+and the idea of being lost. So, perhaps they should be rated higher.
+I think we would need some more example sentences to see if SM really can better distinguish sentences with more in common. 
+
+
